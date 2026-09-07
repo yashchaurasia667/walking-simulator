@@ -12,6 +12,7 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(assimp REQUIRED)
+find_package(glm REQUIRED)
 
 # --- vars ---
 set(CODE_DIR ${CMAKE_SOURCE_DIR}/src/)
@@ -47,23 +48,19 @@ target_link_libraries(imgui PUBLIC
 )
 
 # -- abstractions and other dependencies ---
-file(GLOB_RECURSE USR_DEPS
-  ${LIB_SRC_DIR}/*.cpp
-  ${LIB_SRC_DIR}/*.c
-)
+add_subdirectory(${EXTERN_DIR}/glabstractions)
+add_library(glad STATIC ${EXTERN_DIR}/glad/src/gl.c)
+target_include_directories(glad PUBLIC ${EXTERN_DIR}/glad/include)
 
 # --- main executable ---
 file(GLOB_RECURSE SRC CONFIGURE_DEPENDS ${CODE_DIR}/*.cpp)
 add_executable(
   ${PROJECT_NAME}
   ${SRC}
-  ${USR_DEPS}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${CODE_DIR}
-  ${LIB_INC_DIR}
-  "${LIB_INC_DIR}/custom"
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
@@ -74,7 +71,10 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE
   imgui
   OpenGL::GL
+  glm::glm
   glfw
+  glad
+  glabstractions
   Threads::Threads
   assimp::assimp
   minizip

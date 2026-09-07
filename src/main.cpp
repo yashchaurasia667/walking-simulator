@@ -57,7 +57,7 @@ int main() {
     return -1;
   }
   glfwMakeContextCurrent(window);
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+  if (!gladLoadGL(glfwGetProcAddress)) {
     std::cout << "Failed to initialize opengl function pointers" << std::endl;
     return -1;
   }
@@ -80,9 +80,8 @@ int main() {
     Skybox skybox("./resources/skyboxes/citrus-orchard-road", "hdr");
     Terrain terrain;
     terrain.initShader("./shaders/noise_compute.glsl",
-                       "./shaders/chunk_vert.glsl",
-                       "./shaders/chunk_frag.glsl", nullptr,
-                       "./shaders/tessellation_control.glsl",
+                       "./shaders/chunk_vert.glsl", "./shaders/chunk_frag.glsl",
+                       nullptr, "./shaders/tessellation_control.glsl",
                        "./shaders/tessellation_evaluation.glsl");
 
     Texture terrainNormal(
