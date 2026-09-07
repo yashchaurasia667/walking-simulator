@@ -1,7 +1,6 @@
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
-#include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -10,10 +9,8 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/imgui.h>
 
-#include <cmath>
 #include <cstdlib>
 #include <iostream>
-#include <vector>
 
 #include <camera.h>
 #include <indexBuffer.h>
@@ -37,9 +34,9 @@ bool wireframe = false, sanity_check = false, render_terrain = true;
 int rezScale = 1;
 
 // FUNCTION DECLERATIONS
-void framebufferSizeCallback(GLFWwindow *window, int width, int height);
+void framebufferSizeCallback(GLFWwindow *, int width, int height);
 void processInput(GLFWwindow *window);
-void cursorPosCallback(GLFWwindow *window, double xposin, double yposin);
+void cursorPosCallback(GLFWwindow *, double xposin, double yposin);
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 void charCallback(GLFWwindow *window, unsigned int codepoint);
@@ -80,22 +77,22 @@ int main() {
   ImGui_ImplOpenGL3_Init("#version 430 core");
 
   {
-    Skybox skybox("../resources/skyboxes/citrus-orchard-road", "hdr");
+    Skybox skybox("./resources/skyboxes/citrus-orchard-road", "hdr");
     Terrain terrain;
-    terrain.initShader("../shaders/noise_compute.glsl", 
-                       "../shaders/chunk_vert.glsl",
-                       "../shaders/chunk_frag.glsl", nullptr,
-                       "../shaders/tessellation_control.glsl",
-                       "../shaders/tessellation_evaluation.glsl");
+    terrain.initShader("./shaders/noise_compute.glsl",
+                       "./shaders/chunk_vert.glsl",
+                       "./shaders/chunk_frag.glsl", nullptr,
+                       "./shaders/tessellation_control.glsl",
+                       "./shaders/tessellation_evaluation.glsl");
 
     Texture terrainNormal(
-        "../resources/normalMaps/rock_face/rock_face_nor_gl_2k.png");
-    Texture waterNormal("../resources/normalMaps/water/water2.jpg");
-    Texture waterNormal2("../resources/normalMaps/water/water3.jpg");
+        "./resources/normalMaps/rock_face/rock_face_nor_gl_2k.png");
+    Texture waterNormal("./resources/normalMaps/water/water2.jpg");
+    Texture waterNormal2("./resources/normalMaps/water/water3.jpg");
 
     // ------------------- SANITY CHECK ------------------------- //
-    Shader checkShader("../shaders/shader_vert_default.glsl",
-                       "../shaders/shader_frag_default.glsl");
+    Shader checkShader("./shaders/shader_vert_default.glsl",
+                       "./shaders/shader_frag_default.glsl");
     float check_plane[] = {
         -1.0f, -1.0f, -2.0f, 0.0f, 0.0f, 1.0f,  -1.0f, -2.0f, 1.0f, 0.0f,
         1.0f,  1.0f,  -2.0f, 1.0f, 1.0f, -1.0f, -1.0f, -2.0f, 0.0f, 0.0f,
@@ -262,7 +259,7 @@ int main() {
   return 0;
 }
 
-void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
+void framebufferSizeCallback(GLFWwindow *, int width, int height) {
   scr_width = width;
   scr_height = height;
   glViewport(0, 0, width, height);
@@ -274,7 +271,7 @@ void processInput(GLFWwindow *window) {
   camera.processMovement(window);
 }
 
-void cursorPosCallback(GLFWwindow *window, double xposin, double yposin) {
+void cursorPosCallback(GLFWwindow *, double xposin, double yposin) {
   float xpos = static_cast<float>(xposin);
   float ypos = static_cast<float>(yposin);
   camera.updateView(xpos, ypos);

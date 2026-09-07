@@ -1,52 +1,82 @@
-cmake_minimum_required(VERSION 3.21)
-project(terrain LANGUAGES C CXX)
+cmake_minimum_required(VERSION 4.2)
+project(terraingen LANGUAGES C CXX)
 
-find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED) 
-
+# -- c++ --
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
+
+# --- dependencies ---
+find_package(OpenGL REQUIRED)
+find_package(glfw3 REQUIRED)
 find_package(Threads REQUIRED)
+find_package(assimp REQUIRED)
 
-set(CODE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(SRC_EXT /usr/local/src)
-set(INC_EXT /usr/local/include)
+# --- vars ---
+set(CODE_DIR ${CMAKE_SOURCE_DIR}/src/)
+set(EXTERN_DIR ${CMAKE_SOURCE_DIR}/external/)
+set(LIB_SRC_DIR /usr/local/src)
+set(LIB_INC_DIR /usr/local/include)
 
-# Added CONFIGURE_DEPENDS so CMake regenerates if you add/remove files
-file(GLOB IMGUI_SRC CONFIGURE_DEPENDS "${SRC_EXT}/imgui/*.cpp")
-file(GLOB IMGUI_BACKEND_SRC CONFIGURE_DEPENDS "${SRC_EXT}/imgui/backends/*.cpp")
-file(GLOB_RECURSE USR_DEP CONFIGURE_DEPENDS "${SRC_EXT}/custom/*.cpp")
+# --- ImGui ---
+set(IMGUI_DIR ${EXTERN_DIR}/imgui)
 
-file(GLOB_RECURSE LIB_CODE_SRC CONFIGURE_DEPENDS "${CODE}/*.cpp")
-list(REMOVE_ITEM LIB_CODE_SRC "${CODE}/main.cpp")
+set(IMGUI_SOURCES
+  ${IMGUI_DIR}/imgui.cpp
+  ${IMGUI_DIR}/imgui_draw.cpp
+  ${IMGUI_DIR}/imgui_tables.cpp
+  ${IMGUI_DIR}/imgui_widgets.cpp
+  ${IMGUI_DIR}/imgui_demo.cpp
 
-add_library(depends STATIC 
-    "${SRC_EXT}/glad.c"
-    ${USR_DEP}
-    ${LIB_CODE_SRC}
-    ${IMGUI_SRC}
-    ${IMGUI_BACKEND_SRC}
+  ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+  ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
 
-target_include_directories(depends PUBLIC
-    ${CODE}
-    ${INC_EXT}
-    "${INC_EXT}/custom"
-    "${INC_EXT}/imgui"
-    "${INC_EXT}/imgui/backends"
+add_library(imgui STATIC ${IMGUI_SOURCES})
+
+target_include_directories(imgui PUBLIC
+  ${EXTERN_DIR}
+  ${IMGUI_DIR}
+  ${IMGUI_DIR}/backends
 )
 
-# Removed -g. Run `cmake -B build -DCMAKE_BUILD_TYPE=Debug` instead.
-target_compile_options(depends PRIVATE -Wall -Wextra)
-
-# Link Dependencies ---
-target_link_libraries(depends PUBLIC
-    OpenGL::GL
-    glfw
-    Threads::Threads
-    minizip 
-    z
+target_link_libraries(imgui PUBLIC
+  OpenGL::GL
+  glfw3
 )
 
-add_executable(${PROJECT_NAME} "${CODE}/main.cpp")
-target_link_libraries(${PROJECT_NAME} PRIVATE depends)
+# -- abstractions and other dependencies ---
+file(GLOB_RECURSE USR_DEPS
+  ${LIB_SRC_DIR}/*.cpp
+  ${LIB_SRC_DIR}/*.c
+)
+
+# --- main executable ---
+file(GLOB_RECURSE SRC CONFIGURE_DEPENDS ${CODE_DIR}/*.cpp)
+add_executable(
+  ${PROJECT_NAME}
+  ${SRC}
+  ${USR_DEPS}
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+  ${CODE_DIR}
+  ${LIB_INC_DIR}
+  "${LIB_INC_DIR}/custom"
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+  -Wall
+  -Wextra
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  imgui
+  OpenGL::GL
+  glfw
+  Threads::Threads
+  assimp::assimp
+  minizip
+  z
+)
