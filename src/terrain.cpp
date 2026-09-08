@@ -1,7 +1,5 @@
 #include "terrain.h"
-#include <cmath>
 #include <glm/ext/matrix_transform.hpp>
-#include <iostream>
 
 Terrain::Terrain(int chunkWidth, int cellWidth, int noiseSeed, unsigned int rez,
                  int drawDist) {
@@ -26,6 +24,8 @@ Terrain::~Terrain() {
 }
 
 void Terrain::generateChunks() {
+  chunks.clear();
+
   // drawDist -> 1 to n
   unsigned int n = drawDist * 2 - 1;
   int half = (int)(n / 2);
@@ -40,13 +40,7 @@ void Terrain::generateChunks() {
   }
 }
 
-void Terrain::initShader(const char *compute, const char *vert,
-                         const char *frag, const char *geometry,
-                         const char *tess_control,
-                         const char *tess_evaluation) {
-  noiseShader = ComputeShader(compute);
-  shader = Shader(vert, frag, geometry, tess_control, tess_evaluation);
-
+void Terrain::generateChunkTextures() {
   for (unsigned int i = 0; i < chunks.size(); i++) {
     glGenTextures(1, &chunks[i].heightMap);
     glBindTexture(GL_TEXTURE_2D, chunks[i].heightMap);
@@ -57,10 +51,20 @@ void Terrain::initShader(const char *compute, const char *vert,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   }
+}
+
+void Terrain::initShader(const char *compute, const char *vert,
+                         const char *frag, const char *geometry,
+                         const char *tess_control,
+                         const char *tess_evaluation) {
+  noiseShader = ComputeShader(compute);
+  shader = Shader(vert, frag, geometry, tess_control, tess_evaluation);
+
   initTerrain();
 }
 
 void Terrain::initTerrain() {
+  generateChunkTextures();
   for (int i = 0; i < (int)chunks.size(); i++) {
     generateChunkHeightmap(i);
   }
@@ -231,4 +235,11 @@ void Terrain::render(Camera camera, glm::mat4 model, glm::mat4 projection) {
     vao.bind();
     glDrawArrays(GL_PATCHES, 0, rez * rez * 4);
   }
+}
+
+void Terrain::reinit() {
+  generateChunks();
+  initTerrain();
+  generateVertices();
+  uploadVertexData();
 }

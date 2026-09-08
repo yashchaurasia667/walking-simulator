@@ -1,16 +1,19 @@
 #pragma once
 #include <glad/glad.h>
+
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <climits>
-#include <queue>
-#include <vector>
+
 #include <camera.h>
 #include <shader.h>
 #include <vertexArray.h>
 #include <vertexBuffer.h>
 #include <vertexBufferLayout.h>
+
+#include <climits>
+#include <queue>
+#include <vector>
 
 struct Chunk {
   glm::ivec2 coord;
@@ -36,12 +39,12 @@ public:
   float amp = 128.0f, freq = 0.29f, persistance = 0.43f, lacunarity = 2.7f;
 
   // lighting/color vars
-  glm::vec3 lightDir     = glm::vec3(-0.35f, 0.3f, 1.0f),
-            lightColor   = glm::vec3(0.47f, 0.34f, 0.26f),
-            ambient      = glm::vec3(0.62f, 0.59f, 1.0f),
+  glm::vec3 lightDir = glm::vec3(-0.35f, 0.3f, 1.0f),
+            lightColor = glm::vec3(0.47f, 0.34f, 0.26f),
+            ambient = glm::vec3(0.62f, 0.59f, 1.0f),
             terrainColor = glm::vec3(0.35f, 0.28f, 0.15f),
-            snowColor    = glm::vec3(1.0f),
-            waterColor   = glm::vec3(0.2f, 0.5f, 0.7f);
+            snowColor = glm::vec3(1.0f),
+            waterColor = glm::vec3(0.2f, 0.5f, 0.7f);
 
   // shaders
   ComputeShader noiseShader;
@@ -51,13 +54,14 @@ public:
           unsigned int rez = 20, int drawDist = 3);
   ~Terrain();
 
-  void initShader(const char *compute, const char *vert,
-                  const char *frag, const char *geometry = nullptr,
+  void initShader(const char *compute, const char *vert, const char *frag,
+                  const char *geometry = nullptr,
                   const char *tess_control = nullptr,
                   const char *tess_evaluation = nullptr);
 
   void initTerrain();
   void render(Camera camera, glm::mat4 model, glm::mat4 projection);
+  void reinit();
 
 private:
   int rezScale = 1;
@@ -68,6 +72,7 @@ private:
   VertexBuffer vbo;
   VertexBufferLayout layout;
 
+  void generateChunkTextures();
   void generateVertices();
   void uploadVertexData();
   void generateChunks();

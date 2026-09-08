@@ -21,13 +21,13 @@
 #include <vertexBuffer.h>
 #include <vertexBufferLayout.h>
 
-#define STB_IMAGE_IMPLEMENTATION
 #include <texture.h>
 
 // GLOBAL VARIABLES
 bool camera_movement = false;
 Camera camera(glm::vec3(0.0f, 1.0f, 0.0f), 45.0f, 0.1f, 250.0f);
 unsigned int scr_width = 1280, scr_height = 720;
+const int VSYNC = 0;
 
 // IMGUI PARAMS
 bool wireframe = false, sanity_check = false, render_terrain = true;
@@ -43,10 +43,18 @@ void charCallback(GLFWwindow *window, unsigned int codepoint);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action,
                  int mods);
 
-int main() {
+extern "C" {
+__attribute__((visibility("default"))) unsigned long NvOptimusEnablement = 1;
+__attribute__((
+    visibility("default"))) int AmdPowerXpressRequestHighPerformance = 1;
+}
+
+int main(int argc, char *argv[]) {
+  if (argc > 1 && std::string(argv[1]) == "--x11")
+    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   GLFWwindow *window =
@@ -57,6 +65,8 @@ int main() {
     return -1;
   }
   glfwMakeContextCurrent(window);
+  glfwSwapInterval(VSYNC);
+
   if (!gladLoadGL(glfwGetProcAddress)) {
     std::cout << "Failed to initialize opengl function pointers" << std::endl;
     return -1;
@@ -103,6 +113,10 @@ int main() {
     check_layout.push<float>(2);
     check_vao.addBuffer(check_vbo, check_layout);
     // -------------------------------------------------------- //
+
+    std::cout << "GPU: " << glGetString(GL_RENDERER) << "\n";
+    std::cout << "Vendor: " << glGetString(GL_VENDOR) << "\n";
+    std::cout << "OpenGL: " << glGetString(GL_VERSION) << "\n";
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -166,6 +180,8 @@ int main() {
           ImGui::Begin("chunk");
           ImGui::InputInt("chunk width", &terrain.chunkWidth);
           ImGui::InputInt("cell width", &terrain.cellWidth);
+          ImGui::SliderInt("draw radius", &terrain.drawDist, 1, 100);
+
           ImGui::InputInt("noise seed", &terrain.noiseSeed);
           ImGui::SliderInt("nosie pass", &terrain.noisePass, 1, 64);
           ImGui::SliderInt("rezScale", &rezScale, 1, 64);
@@ -176,7 +192,8 @@ int main() {
           ImGui::SliderFloat("slope strength", &terrain.slopeStrength, 0.0f,
                              10.0f);
           if (ImGui::Button("Reinitialize terrain")) {
-            terrain.initTerrain();
+            terrain.reinit();
+            // terrain.initTerrain();
             // terrain.generateVertices();
             // terrain.uploadVertexData();
           }
