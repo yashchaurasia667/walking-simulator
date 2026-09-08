@@ -138,34 +138,34 @@ int main(int argc, char *argv[]) {
         {
           ImGui::Begin("lighting");
           if (ImGui::CollapsingHeader("light dir")) {
-            ImGui::SliderFloat("x", &terrain.lightDir.x, -1.0f, 1.0f);
-            ImGui::SliderFloat("y", &terrain.lightDir.y, -1.0f, 1.0f);
-            ImGui::SliderFloat("z", &terrain.lightDir.z, -1.0f, 1.0f);
+            ImGui::SliderFloat("x", &terrain._light_dirn.x, -1.0f, 1.0f);
+            ImGui::SliderFloat("y", &terrain._light_dirn.y, -1.0f, 1.0f);
+            ImGui::SliderFloat("z", &terrain._light_dirn.z, -1.0f, 1.0f);
           }
           if (ImGui::CollapsingHeader("light color")) {
-            ImGui::SliderFloat("r", &terrain.lightColor.x, 0.0f, 1.0f);
-            ImGui::SliderFloat("g", &terrain.lightColor.y, 0.0f, 1.0f);
-            ImGui::SliderFloat("b", &terrain.lightColor.z, 0.0f, 1.0f);
+            ImGui::SliderFloat("r", &terrain._light_color.x, 0.0f, 1.0f);
+            ImGui::SliderFloat("g", &terrain._light_color.y, 0.0f, 1.0f);
+            ImGui::SliderFloat("b", &terrain._light_color.z, 0.0f, 1.0f);
           }
           if (ImGui::CollapsingHeader("ambient color")) {
-            ImGui::SliderFloat("ar", &terrain.ambient.x, 0.0f, 1.0f);
-            ImGui::SliderFloat("ag", &terrain.ambient.y, 0.0f, 1.0f);
-            ImGui::SliderFloat("ab", &terrain.ambient.z, 0.0f, 1.0f);
+            ImGui::SliderFloat("ar", &terrain._ambient.x, 0.0f, 1.0f);
+            ImGui::SliderFloat("ag", &terrain._ambient.y, 0.0f, 1.0f);
+            ImGui::SliderFloat("ab", &terrain._ambient.z, 0.0f, 1.0f);
           }
           if (ImGui::CollapsingHeader("terrain color")) {
-            ImGui::SliderFloat("tr", &terrain.terrainColor.x, 0.0f, 1.0f);
-            ImGui::SliderFloat("tg", &terrain.terrainColor.y, 0.0f, 1.0f);
-            ImGui::SliderFloat("tb", &terrain.terrainColor.z, 0.0f, 1.0f);
+            ImGui::SliderFloat("tr", &terrain._terrain_color.x, 0.0f, 1.0f);
+            ImGui::SliderFloat("tg", &terrain._terrain_color.y, 0.0f, 1.0f);
+            ImGui::SliderFloat("tb", &terrain._terrain_color.z, 0.0f, 1.0f);
           }
           if (ImGui::CollapsingHeader("snow color")) {
-            ImGui::SliderFloat("sr", &terrain.snowColor.x, 0.0f, 1.0f);
-            ImGui::SliderFloat("sg", &terrain.snowColor.y, 0.0f, 1.0f);
-            ImGui::SliderFloat("sb", &terrain.snowColor.z, 0.0f, 1.0f);
+            ImGui::SliderFloat("sr", &terrain._snow_color.x, 0.0f, 1.0f);
+            ImGui::SliderFloat("sg", &terrain._snow_color.y, 0.0f, 1.0f);
+            ImGui::SliderFloat("sb", &terrain._snow_color.z, 0.0f, 1.0f);
           }
           if (ImGui::CollapsingHeader("water color")) {
-            ImGui::SliderFloat("sr", &terrain.waterColor.x, 0.0f, 1.0f);
-            ImGui::SliderFloat("sg", &terrain.waterColor.y, 0.0f, 1.0f);
-            ImGui::SliderFloat("sb", &terrain.waterColor.z, 0.0f, 1.0f);
+            ImGui::SliderFloat("sr", &terrain._water_color.x, 0.0f, 1.0f);
+            ImGui::SliderFloat("sg", &terrain._water_color.y, 0.0f, 1.0f);
+            ImGui::SliderFloat("sb", &terrain._water_color.z, 0.0f, 1.0f);
           }
           ImGui::End();
         }
@@ -178,18 +178,18 @@ int main(int argc, char *argv[]) {
         }
         {
           ImGui::Begin("chunk");
-          ImGui::InputInt("chunk width", &terrain.chunkWidth);
-          ImGui::InputInt("cell width", &terrain.cellWidth);
-          ImGui::SliderInt("draw radius", &terrain.drawDist, 1, 100);
+          ImGui::InputInt("chunk width", &terrain._chunk_width);
+          ImGui::InputInt("cell width", &terrain._cell_width);
+          ImGui::SliderInt("draw radius", &terrain._draw_dist, 1, 100);
 
-          ImGui::InputInt("noise seed", &terrain.noiseSeed);
-          ImGui::SliderInt("nosie pass", &terrain.noisePass, 1, 64);
+          ImGui::InputInt("noise seed", &terrain._noise_seed);
+          ImGui::SliderInt("nosie pass", &terrain._noise_pass, 1, 64);
           ImGui::SliderInt("rezScale", &rezScale, 1, 64);
 
-          ImGui::SliderFloat("frequency", &terrain.freq, 0.0f, 1.0f);
-          ImGui::SliderFloat("lacunarity", &terrain.lacunarity, 0.0f, 5.0f);
-          ImGui::SliderFloat("persistance", &terrain.persistance, 0.0f, 1.0f);
-          ImGui::SliderFloat("slope strength", &terrain.slopeStrength, 0.0f,
+          ImGui::SliderFloat("frequency", &terrain._freq, 0.0f, 1.0f);
+          ImGui::SliderFloat("lacunarity", &terrain._lacunarity, 0.0f, 5.0f);
+          ImGui::SliderFloat("persistance", &terrain._persistance, 0.0f, 1.0f);
+          ImGui::SliderFloat("slope strength", &terrain._slope_strength, 0.0f,
                              10.0f);
           if (ImGui::Button("Reinitialize terrain")) {
             terrain.reinit();
@@ -203,22 +203,22 @@ int main(int argc, char *argv[]) {
           ImGui::Begin("terrain");
           if (ImGui::CollapsingHeader("TESS DISTANCE")) {
             ImGui::SliderFloat("min tessellation distance",
-                               &terrain.tess_min_dist, 0.0f, 100.0f);
+                               &terrain._tess_min_dist, 0.0f, 100.0f);
             ImGui::SliderFloat("max tessellation distance",
-                               &terrain.tess_max_dist, 1.0f, 10000.0f);
+                               &terrain._tess_max_dist, 1.0f, 10000.0f);
           }
           if (ImGui::CollapsingHeader("TESS LEVEL")) {
-            ImGui::SliderInt("min tessellation level", &terrain.tess_min_level,
+            ImGui::SliderInt("min tessellation level", &terrain._tess_min_level,
                              0.0f, 64.0f);
-            ImGui::SliderInt("max tessellation level", &terrain.tess_max_level,
+            ImGui::SliderInt("max tessellation level", &terrain._tess_max_level,
                              4.0f, 128.0f);
           }
-          ImGui::SliderFloat("amplitude", &terrain.amp, 0.0f, 1000.0f);
-          ImGui::SliderFloat("snow slope max", &terrain.snowSlopeMax, 0.0f,
+          ImGui::SliderFloat("amplitude", &terrain._amp, 0.0f, 1000.0f);
+          ImGui::SliderFloat("snow slope max", &terrain._snow_slope_max, 0.0f,
                              1.0f);
-          ImGui::SliderFloat("snow slope min", &terrain.snowSlopeMin, 0.0f,
+          ImGui::SliderFloat("snow slope min", &terrain._snow_slope_min, 0.0f,
                              10.0f);
-          ImGui::SliderFloat("tex scale", &terrain.texScale, 0.0f, 100.0f);
+          ImGui::SliderFloat("tex scale", &terrain._tex_scale, 0.0f, 100.0f);
           ImGui::End();
         }
       }
@@ -250,12 +250,12 @@ int main(int argc, char *argv[]) {
         glActiveTexture(GL_TEXTURE4);
         skybox.bindSkybox();
 
-        terrain.shader.bind();
-        terrain.shader.setInt("u_terrainNormal", 1);
-        terrain.shader.setInt("u_waterNormal", 2);
-        terrain.shader.setInt("u_waterNormal2", 3);
-        terrain.shader.setInt("u_skybox", 4);
-        terrain.shader.setFloat("u_time", (float)glfwGetTime());
+        terrain._shader.bind();
+        terrain._shader.setInt("u_terrainNormal", 1);
+        terrain._shader.setInt("u_waterNormal", 2);
+        terrain._shader.setInt("u_waterNormal2", 3);
+        terrain._shader.setInt("u_skybox", 4);
+        terrain._shader.setFloat("u_time", (float)glfwGetTime());
 
         terrain.render(camera, model, projection);
       }
