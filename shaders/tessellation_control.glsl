@@ -13,12 +13,12 @@ uniform float MAX_DISTANCE;
 in vec2 TexCoords[];
 out vec2 TextureCoords[];
 
-in gl_PerVertex
-{
-  vec4 gl_Position;
-  float gl_PointSize;
-  float gl_ClipDistance[];
-} gl_in[gl_MaxPatchVertices];
+// in gl_PerVertex
+// {
+//   vec4 gl_Position;
+//   float gl_PointSize;
+//   float gl_ClipDistance[];
+// } gl_in[gl_MaxPatchVertices];
 
 void main() {
   gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;

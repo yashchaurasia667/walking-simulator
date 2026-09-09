@@ -44,7 +44,7 @@ target_include_directories(imgui PUBLIC
 
 target_link_libraries(imgui PUBLIC
   OpenGL::GL
-  glfw3
+  glfw
 )
 
 # -- abstractions and other dependencies ---
