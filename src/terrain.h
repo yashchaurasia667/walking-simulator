@@ -1,4 +1,6 @@
 #pragma once
+#include <deque>
+#include <functional>
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
@@ -22,8 +24,22 @@ struct Chunk {
   bool needsRegen = false;
 };
 
+struct DeletionQue {
+  std::deque<std::function<void()>> deletors;
+  void push(std::function<void()> &&fun) { deletors.push_back(fun); }
+  void flush() {
+    for (auto it = deletors.rbegin(); it != deletors.rend(); it++) {
+      (*it)();
+    }
+    deletors.clear();
+  }
+};
+
 class Terrain {
 public:
+  DeletionQue _main_deletion_que;
+  DeletionQue _chunk_deletion_que;
+
   // forces update on first frame
   glm::ivec2 _last_player_chunk = glm::ivec2(INT_MAX);
 

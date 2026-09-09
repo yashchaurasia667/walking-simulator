@@ -17,6 +17,9 @@ Terrain::Terrain(int chunkWidth, int cellWidth, int noiseSeed, unsigned int rez,
 }
 
 Terrain::~Terrain() {
+  _chunk_deletion_que.flush();
+  _main_deletion_que.flush();
+
   for (Chunk &c : _chunks) {
     if (c.heightMap != 0)
       glDeleteTextures(1, &c.heightMap);
@@ -24,6 +27,11 @@ Terrain::~Terrain() {
 }
 
 void Terrain::generateChunks() {
+  for (auto c : _chunks) {
+    unsigned int id = c.heightMap;
+    _chunk_deletion_que.push([id]() { glDeleteTextures(1, &id); });
+  }
+  _chunk_deletion_que.flush();
   _chunks.clear();
 
   // drawDist -> 1 to n

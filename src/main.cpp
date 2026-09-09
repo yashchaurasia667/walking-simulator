@@ -43,12 +43,6 @@ void charCallback(GLFWwindow *window, unsigned int codepoint);
 void keyCallback(GLFWwindow *window, int key, int scancode, int action,
                  int mods);
 
-extern "C" {
-__attribute__((visibility("default"))) unsigned long NvOptimusEnablement = 1;
-__attribute__((
-    visibility("default"))) int AmdPowerXpressRequestHighPerformance = 1;
-}
-
 int main(int argc, char *argv[]) {
   if (argc > 1 && std::string(argv[1]) == "--x11")
     glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
@@ -267,11 +261,11 @@ int main(int argc, char *argv[]) {
       glfwSwapBuffers(window);
     }
   }
-
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
   glfwTerminate();
+
   return 0;
 }
 
